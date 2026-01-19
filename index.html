@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Gesture Recognition | Computer Vision</title>
+    <meta name="description" content="Real-time hand gesture and pose tracking using MediaPipe">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- MediaPipe -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-particles"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <span class="logo-icon">👋</span>
+                <span class="logo-text">Gesture Vision</span>
+            </h1>
+            <p class="tagline">Real-time Hand & Pose Tracking</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Video Container -->
+            <div class="video-container">
+                <video id="webcam" autoplay playsinline></video>
+                <canvas id="output-canvas"></canvas>
+                
+                <!-- Overlay Info -->
+                <div class="video-overlay">
+                    <div class="fps-counter" id="fps-counter">FPS: --</div>
+                    <div class="gesture-display" id="gesture-display">
+                        <div class="gesture-icon">✋</div>
+                        <div class="gesture-name">No gesture detected</div>
+                    </div>
+                </div>
+
+                <!-- Text Overlay Input -->
+                <div class="text-overlay" id="text-overlay" contenteditable="true" data-placeholder="Click to add text..."></div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="control-section">
+                    <h3 class="control-title">Tracking Options</h3>
+                    <div class="control-group">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-hands" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Hand Tracking</span>
+                        </label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-pose" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Pose Tracking</span>
+                        </label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-gestures" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Gesture Recognition</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3 class="control-title">Visual Settings</h3>
+                    <div class="control-group">
+                        <div class="color-picker-group">
+                            <label for="hand-color">Hand Color</label>
+                            <input type="color" id="hand-color" value="#00ffff">
+                        </div>
+                        <div class="color-picker-group">
+                            <label for="pose-color">Pose Color</label>
+                            <input type="color" id="pose-color" value="#ff00ff">
+                        </div>
+                        <div class="slider-group">
+                            <label for="confidence-slider">Min Confidence: <span id="confidence-value">0.5</span></label>
+                            <input type="range" id="confidence-slider" min="0" max="1" step="0.05" value="0.5">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3 class="control-title">Actions</h3>
+                    <div class="control-group button-group">
+                        <button class="btn btn-primary" id="screenshot-btn">
+                            📸 Screenshot
+                        </button>
+                        <button class="btn btn-secondary" id="toggle-text-btn">
+                            📝 Toggle Text
+                        </button>
+                        <button class="btn btn-secondary" id="reset-btn">
+                            🔄 Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3 class="control-title">Detected Gestures</h3>
+                    <div class="gesture-library" id="gesture-library">
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">✌️</div>
+                            <div class="gesture-label">Peace</div>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">👍</div>
+                            <div class="gesture-label">Thumbs Up</div>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">👉</div>
+                            <div class="gesture-label">Pointing</div>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">✊</div>
+                            <div class="gesture-label">Fist</div>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">🖐️</div>
+                            <div class="gesture-label">Open Palm</div>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">🤙</div>
+                            <div class="gesture-label">Shaka</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Built with MediaPipe • Real-time Computer Vision</p>
+    </footer>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Initializing camera and AI models...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="gestures.js"></script>
+    <script src="tracking.js"></script>
+    <script src="controls.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
