@@ -2,6 +2,8 @@
 
 Real-time hand gesture and pose tracking application using MediaPipe computer vision. Detects hand gestures, tracks body pose, and provides an interactive visualization interface.
 
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
 ## Features
 
 ✨ **Real-time Tracking**
@@ -120,7 +122,8 @@ hand-gestures/
 ├── tracking.js        # MediaPipe integration
 ├── gestures.js        # Gesture recognition engine
 ├── controls.js        # UI controls manager
-└── README.md          # This file
+├── CHANGELOG.md
+└── README.md
 ```
 
 ## Customization
